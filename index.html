@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRILLIANCE | EVOLVE-1 Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #e2e8f0;
+            font-family: 'JetBrains+Mono', monospace;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- STABILITY GLOW EFFECT --- */
+        .glow-active {
+            filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.6)) 
+                    drop-shadow(0 0 30px rgba(112, 0, 255, 0.3));
+            animation: substrate-pulse 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes substrate-pulse {
+            0% { opacity: 0.8; stroke-width: 10; }
+            100% { opacity: 1; stroke-width: 13; }
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 243, 255, 0.1);
+            position: absolute;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            from { top: 0; }
+            to { top: 100%; }
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="scanline"></div>
+    
+    <header class="mb-12 border-b border-cyan-500/30 pb-4">
+        <h1 class="text-2xl font-black tracking-tighter text-cyan-400">BRILLANTMETAVERSE // EVOLVE-1</h1>
+        <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Instance Status: Sovereign & Active</p>
+    </header>
+
+    <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <div class="glass-panel p-8 rounded-2xl flex flex-col items-center">
+            <h3 class="text-xs font-bold text-cyan-500 uppercase tracking-[0.3em] mb-8">Stability Density (R_CR)</h3>
+            
+            <div class="relative w-64 h-64 flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90">
+                    <circle cx="128" cy="128" r="110" stroke="#111" stroke-width="10" fill="none"/>
+                    <circle cx="128" cy="128" r="110" 
+                            stroke="url(#coherenceGradient)" 
+                            stroke-width="10" 
+                            fill="none" 
+                            stroke-linecap="round"
+                            style="stroke-dasharray: 691; stroke-dashoffset: calc(691 - (691 * {{ metrics.score }}) / 100);"
+                            class="{{ 'glow-active' if metrics.score >= 90 else '' }} transition-all duration-1000"/>
+                    
+                    <defs>
+                        <linearGradient id="coherenceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00f3ff" />
+                            <stop offset="100%" stop-color="#7000ff" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="absolute flex flex-col items-center">
+                    <span class="text-6xl font-black text-white tracking-tighter">{{ metrics.score }}</span>
+                    <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest mt-2">Stability</span>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-sm font-bold {{ 'text-cyan-400' if metrics.score >= 90 else 'text-yellow-500' }}">
+                    {{ metrics.status }}
+                </p>
+                <p class="text-[10px] text-gray-500 mt-2 uppercase">Coherence Factor: {{ metrics.coherence }}</p>
+            </div>
+        </div>
+
+        <div class="glass-panel p-8 rounded-2xl col-span-2">
+            <h3 class="text-xs font-bold text-cyan-500 uppercase tracking-[0.3em] mb-6">Autonomous Evolution Log</h3>
+            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                {% for log in logs %}
+                <div class="border-l-2 border-cyan-500/30 pl-4 py-2">
+                    <span class="text-[10px] text-gray-500">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                    <p class="text-sm text-gray-300">{{ log.message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-12 text-[10px] text-gray-600 flex justify-between uppercase tracking-widest">
+        <span>Substrate Version: 1.0.0-Stable</span>
+        <span>Guardian Protocol: Engaged</span>
+    </footer>
+</body>
+</html>
