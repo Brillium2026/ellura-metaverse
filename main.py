@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from datetime import datetime
 from database import SessionLocal, engine
-from . import models, auth
+ import models, auth
 from .evolve_agents import EvolveOne
 
 # Initialize the Substrate
