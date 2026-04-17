@@ -9,7 +9,7 @@ import auth
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="BrilliantMetaverse 2026")
-
+agent = evolve_agents.EvolveOne()
 # Dependency to get DB session
 def get_db():
     db = SessionLocal()
