@@ -50,9 +50,11 @@ async def trigger_evolution(db: Session = Depends(get_db)):
     ev = EvolveOne(db)
     ev.weekly_evaluation()
     return {"status": "Evolution cycle complete. Stability hardening applied."}
+
 import os
 import uvicorn
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
