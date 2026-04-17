@@ -7,7 +7,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import models
-import database 
+from main import get_db
+
 
 # Security Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "substrate_omega_99_alpha") # Should be in your .env
@@ -28,11 +29,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
+fasync def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate substrate credentials",
+        ev = evolve_agents.EvolveOne(db)
+
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
