@@ -6,7 +6,8 @@ export default function App() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/first-visit")
+    const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+fetch(`${API_URL}/first-visit`)
       .then((res) => res.json())
       .then(setData);
   }, []);
