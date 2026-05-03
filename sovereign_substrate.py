@@ -227,3 +227,21 @@ class SovereignSubstrate:
             'coherence_field': round(self.t_digital['C'], 4),
             'steps': self.step_count,
         }
+@dataclass
+class PsychProfile:
+    user_id: str = ""
+    tone_preference: float = 0.5
+    trust_score: float = 0.5
+    boundary_sensitivity: float = 0.5
+    technical_depth: float = 0.5
+    emotional_intensity: float = 0.5
+    recurring_topics: List[str] = field(default_factory=list)
+    summary: str = ""
+
+class SovereignSubstrate:
+    def __init__(self, ...):
+        ...
+        self.profile = PsychProfile()
+
+    def update_profile(self, user_text: str, assistant_text: str = ""):
+        ...
