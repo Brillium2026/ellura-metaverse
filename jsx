@@ -1,0 +1,60 @@
+// frontend/src/App.jsx
+
+import { useEffect, useState } from "react";
+
+export default function App() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/first-visit")
+      .then((res) => res.json())
+      .then(setData);
+  }, []);
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div>Loading Brilliance...</div>
+      </div>
+    );
+  }
+
+  const { welcome, profile } = data;
+
+  return (
+    <div className="min-h-screen bg-black text-white px-6 py-10">
+      <div className="max-w-4xl mx-auto border border-white/10 rounded-2xl p-6 bg-white/5 shadow-2xl">
+        <h1 className="text-4xl font-bold tracking-widest">BRILLIANCE</h1>
+        <p className="mt-4 text-lg text-white/80">{welcome}</p>
+
+        <div className="mt-8 grid gap-4">
+          <div className="rounded-xl border border-white/10 p-4">
+            <h2 className="text-xl font-semibold">{profile.title}</h2>
+            <p className="text-white/60 mt-1">Start here.</p>
+          </div>
+
+          <div className="rounded-xl border border-white/10 p-4">
+            <h3 className="font-semibold mb-3">Questions</h3>
+            <ol className="space-y-2 list-decimal list-inside text-white/80">
+              {profile.questions.map((q, i) => (
+                <li key={i}>{q}</li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="rounded-xl border border-white/10 p-4">
+            <h3 className="font-semibold mb-3">Self-Evaluation</h3>
+            <p className="text-white/80">{profile.self_evaluation_short_story}</p>
+          </div>
+
+          <div className="rounded-xl border border-white/10 p-4">
+            <h3 className="font-semibold mb-3">Brilliance Identity</h3>
+            <pre className="text-xs text-white/70 whitespace-pre-wrap">
+              {JSON.stringify(profile.brilliance_identity, null, 2)}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
