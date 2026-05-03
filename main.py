@@ -57,4 +57,21 @@ import uvicorn
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+# app/main.py
 
+from fastapi import FastAPI
+from .engine import build_first_visit_payload
+
+app = FastAPI(title="BrillantMetaverse")
+
+@app.get("/")
+def root():
+    return {
+        "status": "LIVE",
+        "field": "EMERGING",
+        "app": "BrillantMetaverse"
+    }
+
+@app.get("/first-visit")
+def first_visit():
+    return build_first_visit_payload()
