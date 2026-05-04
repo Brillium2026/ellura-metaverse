@@ -5,6 +5,8 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 gunicorn
-Flask
+flask
 numpy
+jinja2
+
 
