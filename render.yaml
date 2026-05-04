@@ -10,6 +10,4 @@ services:
     repo: https://github.com/yourusername/brillantmetaverse  # ← Change if needed
     branch: main
     rootDir: ./
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11
+    
