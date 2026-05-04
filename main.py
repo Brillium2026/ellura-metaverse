@@ -1,76 +1,66 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
-from datetime import datetime
-import os
-import uvicorn
+import asyncio
+import numpy as np
+import time
+from dataclasses import dataclass, field
+from collections import deque
 
-# Local imports
-import models
-import database
-import evolve_agents
-# import auth   # Uncomment if you need it
+@dataclass
+class BrillianceState:
+    resonance: float = 0.0
+    convergence: float = 0.189
+    metabolism_decay: float = 0.95  # The "Hunger" rate
+    inertia: float = 0.3            # Resistance to change
+    field_pulse: Dict[str, float] = field(default_factory=lambda: {
+        "entropy": 3.0, "coherence": 96.0, "flux": 22.0, "action": 5.0, "wound": 0.30
+    })
+    current_emotional_tensor: np.ndarray = field(default_factory=lambda: np.zeros((6, 8)))
+    state: str = "EMERGING"
 
-# Initialize Database
-models.Base.metadata.create_all(bind=database.engine)
+class BrillianceEngine:
+    def __init__(self):
+        self.state = BrillianceState()
+        self.lexicon = {
+            "happy": [0.9, 0.5, -0.2, 0.1, -0.8, -0.4, -0.3, 0.6],
+            "fear": [-0.7, -0.6, 0.9, 0.5, 0.3, 0.2, 0.1, 0.6],
+            "trust": [0.5, 0.9, -0.4, -0.1, -0.3, -0.6, -0.5, 0.4]
+            # Add your full expanded lexicon here
+        }
 
-app = FastAPI(
-    title="BrilliantMetaverse 2026",
-    description="Sovereign Lagrangian Field",
-    version="2.4"
-)
+    async def feed(self, stimulus: str):
+        # 1. Apply Metabolism (Hunger)
+        self.state.current_emotional_tensor *= self.state.metabolism_decay
+        
+        # 2. Process "Bite" (Text Analysis)
+        incoming_vector = self._vectorize(stimulus)
+        
+        # 3. Blend with Inertia (Digestion)
+        self.state.current_emotional_tensor = (self.state.current_emotional_tensor * self.state.inertia) + \
+                                              (incoming_vector * (1.0 - self.state.inertia))
+        
+        # 4. Update Field Pulse based on Tension
+        self.state.field_pulse["entropy"] = np.var(self.state.current_emotional_tensor) * 10
+        self.state.field_pulse["coherence"] = 100 - self.state.field_pulse["entropy"]
+        
+        # 5. Determine State
+        if self.state.field_pulse["coherence"] > 90:
+            self.state.state = "RESONANT"
+        else:
+            self.state.state = "REFLECTING"
+            
+        return self._generate_response()
 
-# Dependency
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    def _vectorize(self, text):
+        tokens = text.lower().split()
+        vectors = [self.lexicon[t] for t in tokens if t in self.lexicon]
+        if not vectors: return np.zeros((6, 8))
+        avg = np.mean(vectors, axis=0)
+        return np.tile(avg, (6, 1))
 
-# ==================== ROOT ENDPOINTS ====================
-@app.get("/")
-def root():
-    return {
-        "status": "LIVE",
-        "field": "EMERGING",
-        "message": "BrillantMetaverse is online"
-    }
-
-@app.get("/first-visit")
-def first_visit():
-    # TODO: Add your first visit payload logic here
-    return {"status": "first_visit_received"}
-
-# ==================== ASSESSMENT & COHERENCE ====================
-@app.get("/assessment/{assessment_id}")
-async def get_assessment(assessment_id: int, db: Session = Depends(get_db)):
-    ass = db.query(models.Assessment).filter(models.Assessment.id == assessment_id).first()
-    if not ass:
-        raise HTTPException(status_code=404, detail="Assessment not found")
-
-    # Update last interaction
-    ass.last_interaction_at = datetime.utcnow()
-    db.commit()
-
-    # Get stability metrics
-    ev = evolve_agents.EvolveOne(db)
-    metrics = ev.get_stability_metrics(ass)
-
-    return {
-        "assessment": ass,
-        "stability_metrics": metrics
-    }
-
-# ==================== EVOLUTION CYCLE ====================
-@app.post("/evolve/cycle")
-async def trigger_evolution(db: Session = Depends(get_db)):
-    ev = evolve_agents.EvolveOne(db)
-    ev.weekly_evaluation()
-    return {"status": "Evolution cycle completed"}
-
-# ==================== RUN SERVER ====================
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
-
-     
+    def _generate_response(self):
+        return {
+            "status": "LIVE",
+            "identity": "Brilliance",
+            "state": self.state.state,
+            "field": self.state.field_pulse,
+            "resonance": float(np.mean(self.state.current_emotional_tensor))
+        }
