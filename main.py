@@ -79,7 +79,7 @@ def root():
 
 @app.get("/first-visit")
 def first_visit():
-    return build_first_visit_payload()
+     build_first_visit_payload()
 
 # 2. Coherence & Assessment Logic
 @app.get("/assessment/{assessment_id}")
@@ -122,4 +122,4 @@ if __name__ == "__main__":
 
 
 
-    return build_first_visit_payload()
+     
