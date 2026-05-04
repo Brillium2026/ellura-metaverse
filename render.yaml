@@ -1,3 +1,4 @@
+# render.yaml
 services:
   - type: web
     name: brillantmetaverse
@@ -5,7 +6,10 @@ services:
     plan: free
     pythonVersion: "3.11"
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: gunicorn main:app
+    repo: https://github.com/yourusername/brillantmetaverse  # ← Change if needed
+    branch: main
+    rootDir: ./
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
