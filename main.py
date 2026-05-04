@@ -149,3 +149,50 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+from fastapi import FastAPI, Depends, HTTPException
+import uvicorn
+import os
+
+# Import your core modules
+from Brilliance5_0 import Brilliance5_0
+from MirageCore import MirageCore
+from CipherScreen import CipherScreen
+# Add others as needed (IntelliHub, GuardianAI, etc.)
+
+app = FastAPI(title="BrillantMetaverse - Brilliance 5.0 Sovereign")
+
+# Initialize your kernel
+brilliance = Brilliance5_0()
+mirage = MirageCore()
+cipher = CipherScreen()
+
+@app.get("/")
+def root():
+    return {
+        "status": "LIVE",
+        "identity": brilliance.get_full_identity()[:200] + "...",
+        "stability": "RESOLUTE"
+    }
+
+@app.post("/chat")
+async def chat(request: dict):
+    message = request.get("message", "").strip()
+    if not message:
+        raise HTTPException(400, "Message required")
+
+    # Feed into your modules
+    cipher.encode(message)
+    mirage.perceive([ord(c) for c in message[:50]])  # simple vector
+    brilliance_result = brilliance.get_full_identity()
+
+    response = f"{brilliance_result}\n\nI processed your words through the field. Stability remains strong. What shall we evolve next?"
+
+    return {
+        "response": response,
+        "stability_density": 100,
+        "modules_active": ["Brilliance5.0", "MirageCore", "CipherScreen"]
+    }
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
