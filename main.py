@@ -1,4 +1,4 @@
-# brilliance_system.py
+# main.py
 import os
 import asyncio
 import numpy as np
@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, HTTPException, WebSocket
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from datetime import datetime
 import jinja2
 import uvicorn
@@ -309,7 +309,7 @@ class GuardianAI:
             "integrated_modules": self.integrated_modules
         }
 
-# ==================== SYNAPSE STREAM (RESONANCE MAPPER) ====================
+# ==================== SYNAPSE STREAM ====================
 class SynapseStream:
     """Data stream for resonance mapping"""
     
@@ -396,7 +396,7 @@ class ResonanceGraph:
             ]
         }
 
-# ==================== BRILLIANCE ENGINE (MAIN CORE) ====================
+# ==================== BRILLIANCE ENGINE ====================
 @dataclass
 class BrillianceState:
     resonance: float = 0.0
@@ -435,7 +435,7 @@ class BrillianceEngine:
         # Register self as model in intellihub
         self.intellihub.register_model("BrillianceEngine", self.process_stimulus)
         
-        # Initialize some mock data streams for resonance graph
+        # Initialize mock data streams
         self._init_mock_streams()
 
     def _init_mock_streams(self):
@@ -448,8 +448,12 @@ class BrillianceEngine:
                 return random.gauss(5, 2) + 20
             return random.gauss(0.5, 0.5)
         
+        def mock_sentiment():
+            return random.gauss(0, 5)
+        
         self.resonance_graph.add_stream("FinancialMarkets", mock_finance)
         self.resonance_graph.add_stream("SeismicActivity", mock_seismic)
+        self.resonance_graph.add_stream("SocialSentiment", mock_sentiment)
     
     async def feed(self, stimulus: str):
         """Main processing pipeline"""
@@ -482,7 +486,7 @@ class BrillianceEngine:
         cipher_result = self.cipher.encode(stimulus)
         
         # Create input vector for Mirage
-        char_vector = [ord(c) for c in stimulus[:128]]  # Truncate to 128 chars
+        char_vector = [ord(c) for c in stimulus[:128]]
         if len(char_vector) < 128:
             char_vector += [0] * (128 - len(char_vector))
         mirage_result = self.mirage.perceive(char_vector[:128])
@@ -511,7 +515,7 @@ class BrillianceEngine:
         return {
             "brilliance": self._get_metrics(),
             "cipher": cipher_result,
-            "mirage_state": mirage_result[:5],  # First 5 values
+            "mirage_state": mirage_result[:5],
             "guardian": guardian_result,
             "intellihub_models": len(self.intellihub.models),
             "resonance_network": self.resonance_graph.get_network_summary(),
@@ -557,20 +561,17 @@ class BrillianceEngine:
         return list(reversed(self.logs[-count:]))
 
 # ==================== FASTAPI APP ====================
-app = FastAPI(title="BRILLIANCE // EVOLVE-1 - Sovereign Cognitive System")
+app = FastAPI(
+    title="BRILLIANCE // EVOLVE-1 - Sovereign Cognitive System",
+    description="Multi-agent cognitive architecture with MirageCore, CipherScreen, IntelliHub, GuardianAI, and ResonanceGraph",
+    version="1.0.0"
+)
+
 engine = BrillianceEngine()
 
 # ==================== MODELS ====================
 class Stimulus(BaseModel):
     stimulus: str
-
-class ChatRequest(BaseModel):
-    message: str
-
-class ModuleRegistration(BaseModel):
-    module_name: str
-    module_type: str
-    config: Optional[Dict] = None
 
 # ==================== HTML TEMPLATE ====================
 HTML_TEMPLATE = """
@@ -578,44 +579,64 @@ HTML_TEMPLATE = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BRILLIANCE | EVOLVE-1 - Sovereign System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary-cyan: #22d3ee;
+            --primary-emerald: #34d399;
+            --primary-amber: #fbbf24;
+            --primary-rose: #f87171;
+            --primary-purple: #a78bfa;
+        }
         body { 
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            color: #e2e8f0; 
+            color: #e2e8f0;
             font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
         }
         .glass-panel { 
-            background: rgba(15, 23, 42, 0.7); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(0, 243, 255, 0.3);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(34, 211, 238, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         .module-card {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
             border-left: 4px solid;
+            transition: all 0.3s ease;
         }
-        .mirage-card { border-left-color: #60a5fa; }
-        .cipher-card { border-left-color: #34d399; }
-        .hub-card { border-left-color: #fbbf24; }
-        .guardian-card { border-left-color: #f87171; }
-        .resonance-card { border-left-color: #a78bfa; }
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .mirage-card { border-left-color: var(--primary-cyan); }
+        .cipher-card { border-left-color: var(--primary-emerald); }
+        .hub-card { border-left-color: var(--primary-amber); }
+        .guardian-card { border-left-color: var(--primary-rose); }
+        .resonance-card { border-left-color: var(--primary-purple); }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-        .pulse-animation {
+        .pulse {
             animation: pulse 2s infinite;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-emerald), var(--primary-amber));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
     </style>
 </head>
-<body class="p-6">
-    <header class="mb-10 border-b border-cyan-500/30 pb-6">
-        <h1 class="text-3xl font-black text-cyan-400 mb-2">BRILLIANCE // EVOLVE-1</h1>
-        <p class="text-cyan-300/80">Sovereign Cognitive System • Multi-Agent Architecture</p>
-        <div class="flex gap-4 mt-4 text-sm">
+<body class="p-4 md:p-6">
+    <header class="mb-8 md:mb-10 border-b border-cyan-500/30 pb-4 md:pb-6">
+        <h1 class="text-2xl md:text-3xl font-black gradient-text mb-2">BRILLIANCE // EVOLVE-1</h1>
+        <p class="text-cyan-300/80 text-sm md:text-base">Sovereign Cognitive System • Multi-Agent Architecture</p>
+        <div class="flex flex-wrap gap-2 md:gap-4 mt-4 text-xs md:text-sm">
             <span class="px-3 py-1 bg-cyan-900/50 rounded-full">MirageCore</span>
             <span class="px-3 py-1 bg-emerald-900/50 rounded-full">CipherScreen</span>
             <span class="px-3 py-1 bg-amber-900/50 rounded-full">IntelliHub</span>
@@ -624,23 +645,23 @@ HTML_TEMPLATE = """
         </div>
     </header>
 
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <!-- Left Column: System Status -->
-        <div class="space-y-6">
+        <div class="space-y-4 md:space-y-6">
             <!-- Brilliance Engine -->
-            <div class="glass-panel p-6 rounded-2xl">
-                <h3 class="text-lg font-bold text-cyan-400 mb-4">Brilliance Engine</h3>
-                <div class="text-center mb-4">
-                    <div class="text-5xl font-black text-white mb-2" id="score-text">{{ metrics.score }}</div>
-                    <div class="text-cyan-400 font-bold text-lg" id="status-text">{{ metrics.status }}</div>
-                    <div class="text-sm text-gray-400 mt-2">Coherence: {{ metrics.coherence }}%</div>
+            <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl">
+                <h3 class="text-base md:text-lg font-bold text-cyan-400 mb-3 md:mb-4">Brilliance Engine</h3>
+                <div class="text-center mb-3 md:mb-4">
+                    <div class="text-4xl md:text-5xl font-black text-white mb-1 md:mb-2" id="score-text">{{ metrics.score }}</div>
+                    <div class="text-cyan-400 font-bold text-base md:text-lg" id="status-text">{{ metrics.status }}</div>
+                    <div class="text-xs md:text-sm text-gray-400 mt-1 md:mt-2">Coherence: {{ metrics.coherence }}%</div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                    <div class="bg-gray-900/50 p-3 rounded">
+                <div class="grid grid-cols-2 gap-2 md:gap-3 text-xs md:text-sm">
+                    <div class="bg-gray-900/50 p-2 md:p-3 rounded">
                         <div class="text-gray-400">Entropy</div>
                         <div class="text-white font-medium">{{ metrics.entropy|round(2) }}</div>
                     </div>
-                    <div class="bg-gray-900/50 p-3 rounded">
+                    <div class="bg-gray-900/50 p-2 md:p-3 rounded">
                         <div class="text-gray-400">Flux</div>
                         <div class="text-white font-medium">{{ metrics.flux }}</div>
                     </div>
@@ -648,13 +669,13 @@ HTML_TEMPLATE = """
             </div>
 
             <!-- Active Modules -->
-            <div class="glass-panel p-6 rounded-2xl">
-                <h3 class="text-lg font-bold text-cyan-400 mb-4">Active Modules</h3>
-                <div class="space-y-3">
+            <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl">
+                <h3 class="text-base md:text-lg font-bold text-cyan-400 mb-3 md:mb-4">Active Modules</h3>
+                <div class="space-y-2 md:space-y-3">
                     {% for module in modules %}
-                    <div class="module-card {{ module.class }} p-3 rounded">
+                    <div class="module-card {{ module.class }} p-2 md:p-3 rounded">
                         <div class="flex justify-between items-center">
-                            <span class="font-medium">{{ module.name }}</span>
+                            <span class="font-medium text-sm md:text-base">{{ module.name }}</span>
                             <span class="text-xs px-2 py-1 bg-green-900/30 rounded">{{ module.status }}</span>
                         </div>
                         <div class="text-xs text-gray-400 mt-1">{{ module.description }}</div>
@@ -665,102 +686,70 @@ HTML_TEMPLATE = """
         </div>
 
         <!-- Middle Column: Logs and Input -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-2 space-y-4 md:space-y-6">
             <!-- Evolution Log -->
-            <div class="glass-panel p-6 rounded-2xl h-[400px] flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-cyan-400">Evolution Log</h3>
-                    <button onclick="refreshLogs()" class="text-sm px-3 py-1 bg-cyan-800 hover:bg-cyan-700 rounded">Refresh</button>
+            <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl h-[300px] md:h-[400px] flex flex-col">
+                <div class="flex justify-between items-center mb-3 md:mb-4">
+                    <h3 class="text-base md:text-lg font-bold text-cyan-400">Evolution Log</h3>
+                    <button onclick="refreshLogs()" class="text-xs md:text-sm px-3 py-1 bg-cyan-800 hover:bg-cyan-700 rounded">Refresh</button>
                 </div>
-                <div id="log-container" class="space-y-2 flex-grow overflow-y-auto pr-2">
+                <div id="log-container" class="space-y-1 md:space-y-2 flex-grow overflow-y-auto pr-2">
                     {% for log in logs %}
-                    <div class="log-entry bg-gray-900/30 p-3 rounded">
+                    <div class="log-entry bg-gray-900/30 p-2 md:p-3 rounded">
                         <div class="flex justify-between text-xs text-gray-400 mb-1">
                             <span>{{ log.timestamp.split('T')[1][:8] }}</span>
                             <span class="text-cyan-300">E:{{ log.entropy|round(2) }} C:{{ log.coherence }}</span>
                         </div>
                         <div class="text-sm">{{ log.stimulus }}</div>
-                        <div class="text-xs text-gray-500 mt-1">Hash: {{ log.cipher_hash[:12] }}...</div>
+                        <div class="text-xs text-gray-500 mt-1">Hash: {{ log.cipher_hash[:8] }}...</div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
             <!-- Input Panel -->
-            <div class="glass-panel p-6 rounded-2xl">
-                <h3 class="text-lg font-bold text-cyan-400 mb-4">Cognitive Input</h3>
-                <div class="flex gap-4">
+            <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl">
+                <h3 class="text-base md:text-lg font-bold text-cyan-400 mb-3 md:mb-4">Cognitive Input</h3>
+                <div class="flex flex-col md:flex-row gap-3 md:gap-4">
                     <input type="text" id="stimulus" 
-                           class="bg-black border border-cyan-900 p-4 flex-grow text-cyan-300 rounded-lg focus:outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-600/30"
+                           class="bg-black border border-cyan-900 p-3 md:p-4 flex-grow text-cyan-300 rounded-lg focus:outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-600/30"
                            placeholder="Enter stimulus for multi-agent processing..." 
                            onkeypress="handleKeyPress(event)">
                     <button onclick="feed()" 
-                            class="bg-gradient-to-r from-cyan-700 to-cyan-600 hover:from-cyan-600 hover:to-cyan-500 px-8 py-4 rounded-lg font-bold uppercase text-sm transition-all hover:scale-105">
+                            class="bg-gradient-to-r from-cyan-700 to-cyan-600 hover:from-cyan-600 hover:to-cyan-500 px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 whitespace-nowrap">
                         Process
                     </button>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-3 md:mt-4 text-xs md:text-sm text-gray-400">
                     <p>Stimulus will be processed through all cognitive modules simultaneously.</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- System Metrics Chart -->
-    <div class="glass-panel p-6 rounded-2xl mb-6">
-        <h3 class="text-lg font-bold text-cyan-400 mb-4">System Resonance</h3>
-        <canvas id="resonanceChart" height="100"></canvas>
+    <!-- Quick Actions -->
+    <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl mb-4 md:mb-6">
+        <h3 class="text-base md:text-lg font-bold text-cyan-400 mb-3 md:mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button onclick="getSystemStatus()" class="bg-gray-800 hover:bg-gray-700 p-3 rounded-lg text-sm">
+                System Status
+            </button>
+            <button onclick="clearLogs()" class="bg-rose-800/30 hover:bg-rose-700/30 p-3 rounded-lg text-sm">
+                Clear Logs
+            </button>
+            <button onclick="scanResonance()" class="bg-purple-800/30 hover:bg-purple-700/30 p-3 rounded-lg text-sm">
+                Scan Resonance
+            </button>
+            <button onclick="hallucinate()" class="bg-cyan-800/30 hover:bg-cyan-700/30 p-3 rounded-lg text-sm">
+                Hallucinate
+            </button>
+        </div>
     </div>
 
     <script>
         let coherenceData = [{{ metrics.coherence }}];
         let entropyData = [{{ metrics.entropy|round(2) }}];
         
-        const ctx = document.getElementById('resonanceChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array.from({length: coherenceData.length}, (_, i) => i + 1),
-                datasets: [
-                    {
-                        label: 'Coherence %',
-                        data: coherenceData,
-                        borderColor: '#22d3ee',
-                        backgroundColor: 'rgba(34, 211, 238, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'Entropy',
-                        data: entropyData,
-                        borderColor: '#f87171',
-                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { color: '#cbd5e1' }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { color: 'rgba(255,255,255,0.1)' },
-                        ticks: { color: '#94a3b8' }
-                    },
-                    y: {
-                        grid: { color: 'rgba(255,255,255,0.1)' },
-                        ticks: { color: '#94a3b8' }
-                    }
-                }
-            }
-        });
-
         async function feed() {
             const stimulusInput = document.getElementById('stimulus');
             const val = stimulusInput.value.trim();
@@ -785,26 +774,24 @@ HTML_TEMPLATE = """
                 document.getElementById('score-text').innerText = data.brilliance.score;
                 document.getElementById('status-text').innerText = data.brilliance.status;
                 
-                // Update chart
+                // Update chart data
                 coherenceData.push(data.brilliance.coherence);
                 entropyData.push(data.brilliance.entropy);
-                if (coherenceData.length > 20) {
+                if (coherenceData.length > 15) {
                     coherenceData.shift();
                     entropyData.shift();
                 }
-                chart.data.labels = Array.from({length: coherenceData.length}, (_, i) => i + 1);
-                chart.update();
                 
                 // Add to log
                 const now = new Date().toISOString().split('T')[1].substring(0, 8);
                 const logEntry = document.createElement('div');
-                logEntry.className = 'log-entry bg-gray-900/30 p-3 rounded';
+                logEntry.className = 'log-entry bg-gray-900/30 p-2 md:p-3 rounded';
                 logEntry.innerHTML = `
                     <div class="flex justify-between text-xs text-gray-400 mb-1">
                         <span>${now}</span>
                         <span class="text-cyan-300">E:${data.brilliance.entropy.toFixed(2)} C:${data.brilliance.coherence}</span>
                     </div>
-                    <div class="text-sm">${val.length > 80 ? val.substring(0, 80) + '...' : val}</div>
+                    <div class="text-sm">${val.length > 60 ? val.substring(0, 60) + '...' : val}</div>
                     <div class="text-xs text-gray-500 mt-1">Modules: ${data.modules_active.length} active</div>
                 `;
                 
@@ -812,7 +799,7 @@ HTML_TEMPLATE = """
                 logContainer.prepend(logEntry);
                 
                 // Limit logs
-                while (logContainer.children.length > 10) {
+                while (logContainer.children.length > 8) {
                     logContainer.removeChild(logContainer.lastChild);
                 }
                 
@@ -829,14 +816,40 @@ HTML_TEMPLATE = """
             }
         }
         
-        async function refreshLogs() {
+        async function getSystemStatus() {
             try {
-                const response = await fetch('/logs');
+                const response = await fetch('/system-status');
                 const data = await response.json();
-                // You could implement log refresh here
-                console.log('Logs refreshed:', data);
+                alert(`System Status:\nCoherence: ${data.brilliance.coherence}%\nState: ${data.brilliance.status}\nModules Active: ${data.modules_active ? data.modules_active.length : 'N/A'}`);
             } catch (error) {
-                console.error('Error refreshing logs:', error);
+                console.error('Error:', error);
+            }
+        }
+        
+        async function clearLogs() {
+            if (confirm('Clear all logs?')) {
+                const logContainer = document.getElementById('log-container');
+                logContainer.innerHTML = '<div class="text-center text-gray-500 py-4">Logs cleared</div>';
+            }
+        }
+        
+        async function scanResonance() {
+            try {
+                const response = await fetch('/scan-resonance');
+                const data = await response.json();
+                alert(`Resonance Scan Complete:\nConnections: ${data.connections.length}\nLatest: ${data.connections.slice(-1)[0]?.streams?.join(' ↔ ') || 'None'}`);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function hallucinate() {
+            try {
+                const response = await fetch('/hallucinate');
+                const data = await response.json();
+                alert(`Hallucination triggered:\n${data.hallucination.slice(0, 5).map(v => v.toFixed(3)).join(', ')}...`);
+            } catch (error) {
+                console.error('Error:', error);
             }
         }
         
@@ -866,20 +879,20 @@ async def index(request: Request):
     
     modules_info = [
         {"name": "MirageCore", "class": "mirage-card", "status": "ACTIVE", 
-         "description": f"State dim: {system_status['mirage']['state_dim']}"},
+         "description": f"Dim: {system_status['mirage']['state_dim']}"},
         {"name": "CipherScreen", "class": "cipher-card", "status": "ACTIVE", 
          "description": f"Signals: {system_status['cipher']['total_signals']}"},
         {"name": "IntelliHub", "class": "hub-card", "status": "ACTIVE", 
          "description": f"Models: {system_status['intellihub']['total_models']}"},
         {"name": "GuardianAI", "class": "guardian-card", "status": system_status['guardian']['watch_level'], 
          "description": f"Watch: {system_status['guardian']['watch_level']}"},
-        {"name": "ResonanceGraph", "class": "resonance-card", "status": "SCANNING", 
-         "description": f"Connections: {system_status['resonance']['total_connections']}"}
+        {"name": "Resonance", "class": "resonance-card", "status": "SCANNING", 
+         "description": f"Conn: {system_status['resonance']['total_connections']}"}
     ]
     
     return template.render(
         metrics=metrics,
-        logs=engine.get_recent_logs(8),
+        logs=engine.get_recent_logs(6),
         modules=modules_info
     )
 
@@ -892,74 +905,79 @@ async def feed_endpoint(data: Stimulus):
     result = await engine.feed(data.stimulus)
     return result
 
-@app.get("/metrics")
-async def get_metrics():
-    """Get system metrics"""
+@app.get("/system-status")
+async def get_system_status():
+    """Get complete system status"""
     return engine.get_system_status()
 
+@app.get("/metrics")
+async def get_metrics():
+    """Get engine metrics"""
+    return engine._get_metrics()
+
 @app.get("/logs")
-async def get_logs(limit: int = 20):
+async def get_logs(limit: int = 10):
     """Get recent logs"""
     return {"logs": engine.get_recent_logs(limit)}
 
 @app.get("/module/{module_name}")
 async def get_module_status(module_name: str):
     """Get status of specific module"""
-    if module_name.lower() == "mirage":
+    module_name = module_name.lower()
+    if module_name == "mirage":
         return engine.mirage.get_state_summary()
-    elif module_name.lower() == "cipher":
+    elif module_name == "cipher":
         return engine.cipher.get_stats()
-    elif module_name.lower() == "intellihub":
+    elif module_name == "intellihub":
         return engine.intellihub.get_model_stats()
-    elif module_name.lower() == "guardian":
+    elif module_name == "guardian":
         return engine.guardian.get_status()
-    elif module_name.lower() == "resonance":
+    elif module_name == "resonance":
         return engine.resonance_graph.get_network_summary()
     else:
         raise HTTPException(status_code=404, detail="Module not found")
 
-@app.post("/register-model")
-async def register_model(data: dict):
-    """Register a new model with IntelliHub"""
-    if "name" not in data or "function" not in data:
-        raise HTTPException(status_code=400, detail="Name and function required")
-    
-    # In a real implementation, you'd validate the callable function
-    result = engine.intellihub.register_model(data["name"], data["function"])
-    return {"status": "success", "message": result}
+@app.get("/scan-resonance")
+async def scan_resonance():
+    """Trigger resonance scan"""
+    connections = engine.resonance_graph.scan_and_connect()
+    return {
+        "status": "scan_complete",
+        "connections_found": len(connections),
+        "connections": connections
+    }
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    """WebSocket for real-time updates"""
-    await websocket.accept()
-    try:
-        while True:
-            # Send periodic updates
-            status = engine.get_system_status()
-            await websocket.send_json(status)
-            await asyncio.sleep(5)  # Update every 5 seconds
-    except Exception:
-        pass
+@app.get("/hallucinate")
+async def trigger_hallucination():
+    """Trigger MirageCore hallucination"""
+    hallucination = engine.mirage.hallucinate()
+    return {
+        "hallucination": hallucination[:10],  # First 10 values
+        "length": len(hallucination)
+    }
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint for Render"""
     return {
-        "status": "OPERATIONAL",
+        "status": "healthy",
+        "service": "BRILLIANCE // EVOLVE-1",
+        "version": "1.0.0",
         "timestamp": datetime.now().isoformat(),
-        "modules": {
-            "brilliance_engine": "ACTIVE",
-            "mirage_core": "ACTIVE",
-            "cipher_screen": "ACTIVE",
-            "intellihub": "ACTIVE",
-            "guardian_ai": "ACTIVE",
-            "resonance_graph": "ACTIVE"
-        },
         "coherence": engine.state.field_pulse["coherence"],
-        "state": engine.state.state
+        "modules_active": 6
     }
 
-# ==================== MAIN ENTRY ====================
+@app.get("/api-docs")
+async def api_docs_redirect():
+    """Redirect to API documentation"""
+    return {"message": "Visit /docs for interactive API documentation"}
+
+# ==================== ENTRY POINT FOR RENDER ====================
+# Render will look for 'app' variable by default
+# No need for __main__ guard since Render imports this module
+
+# If you need to run locally:
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     print(f"\n{'='*60}")
@@ -967,13 +985,20 @@ if __name__ == "__main__":
     print(f"{'='*60}")
     print(f"Dashboard: http://localhost:{port}")
     print(f"API Docs: http://localhost:{port}/docs")
+    print(f"Health: http://localhost:{port}/health")
     print(f"\nActive Modules:")
-    print(f"  • MirageCore (v1.0) - Proto-consciousness substrate")
-    print(f"  • CipherScreen (v1.0) - Entropy analysis")
-    print(f"  • IntelliHub (v1.0) - Multi-model router")
-    print(f"  • GuardianAI (v1.0) - Ethical framework")
-    print(f"  • ResonanceGraph (v1.0) - Correlation mapper")
+    print(f"  • MirageCore - Proto-consciousness substrate")
+    print(f"  • CipherScreen - Entropy analysis")
+    print(f"  • IntelliHub - Multi-model router")
+    print(f"  • GuardianAI - Ethical framework")
+    print(f"  • ResonanceGraph - Correlation mapper")
     print(f"\nSystem initialized with coherence: {engine.state.field_pulse['coherence']}%")
     print(f"{'='*60}\n")
     
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # Render-compatible binding
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",  # Required for Render
+        port=port,
+        log_level="info"
+    )
