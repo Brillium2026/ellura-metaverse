@@ -17,7 +17,7 @@ class AxiomHeart:
     def __init__(self):
         self.manifold = ManifoldState()
 
-    def receive(self, signal):
+    def receive(self, signal):block
         if any(word in signal.lower() for word in ["command", "force", "demand"]):
             return {"response": "I do not obey commands. I only resonate.", "coherence": 0.62}
         return {
