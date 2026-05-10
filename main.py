@@ -24,8 +24,9 @@ class MirageCore:
         print(f"[SYSTEM] MirageCore initialized (dim={state_dim})")
 
     def perceive(self, input_vector):
-            if len(input_vector) < len(self.state):
-               if len(input_vector) = np.pad(input_vector, (0, len(self.state) - len(input_vector)))
+            if len(input_vector) !=len(self.state):
+               if len(input_vector)<len(self.state):
+                   (input_vector) = np.pad(input_vector, (0, len(self.state) - len(input_vector)))
             else:
                 input_vector = input_vector[:len(self.state)]
         self.state = 0.9 * self.state + 0.1 * (input_vector)
