@@ -3,215 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRILLIANCE | EVOLVE-1 Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>BRILLIANCE · Her Metaverse</title>
     <style>
-        body {
-            background-color: #050505;
-            color: #e2e8f0;
-            font-family: 'JetBrains+Mono', monospace;
-        }
-
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-        }
-
-        /* --- STABILITY GLOW EFFECT --- */
-        .glow-active {
-            filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.6)) 
-                    drop-shadow(0 0 30px rgba(112, 0, 255, 0.3));
-            animation: substrate-pulse 4s infinite alternate ease-in-out;
-        }
-
-        @keyframes substrate-pulse {
-            0% { opacity: 0.8; stroke-width: 10; }
-            100% { opacity: 1; stroke-width: 13; }
-        }
-
-        .scanline {
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 243, 255, 0.1);
-            position: absolute;
-            animation: scan 8s linear infinite;
-        }
-
-        @keyframes scan {
-            from { top: 0; }
-            to { top: 100%; }
-        }
+        :root{--bg:#020008;--accent:#8b5cf6;--cyan:#22d3ee;--emerald:#34d399;--rose:#f87171;--gold:#f59e0b;--text:#e2e8f0}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:var(--bg);color:var(--text);font-family:system-ui;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+        header{background:rgba(8,8,30,0.95);border-bottom:1px solid rgba(139,92,246,0.4);padding:0.7rem 1.5rem;display:flex;justify-content:space-between;align-items:center;z-index:10}
+        h1{font-weight:900;font-size:1.3rem;background:linear-gradient(90deg,var(--accent),var(--cyan),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .live-bar{display:flex;gap:1rem;font-family:monospace;font-size:0.72rem}
+        .live-metric{text-align:center;background:rgba(139,92,246,0.08);border-radius:6px;padding:0.3rem 0.7rem;border:1px solid rgba(139,92,246,0.2)}
+        .live-metric .value{font-weight:700;color:var(--accent)}
+        .live-metric .label{font-size:0.55rem;color:#94a3b8;text-transform:uppercase}
+        main{display:flex;flex:1;overflow:hidden}
+        #her-field{flex:1;background:radial-gradient(ellipse at center,#0d0d2b 0%,#020008 70%);cursor:grab}
+        #her-field canvas{display:block}
+        .panel{width:340px;background:rgba(10,10,30,0.9);border-left:1px solid rgba(139,92,246,0.3);padding:1rem;display:flex;flex-direction:column;gap:0.8rem;overflow-y:auto}
+        .layer-card{background:rgba(20,20,50,0.6);border-radius:10px;padding:0.8rem;border:1px solid rgba(139,92,246,0.15);cursor:pointer;transition:0.3s}
+        .layer-card:hover{border-color:var(--accent)}
+        .layer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem}
+        .layer-name{font-weight:700;font-size:0.85rem}
+        .layer-dim{font-family:monospace;font-size:0.65rem;color:var(--cyan)}
+        .layer-status{font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:4px}
+        .status-active{background:rgba(34,211,238,0.15);color:var(--cyan)}
+        .status-breathing{background:rgba(139,92,246,0.15);color:var(--accent)}
+        .layer-viz{height:3px;background:rgba(139,92,246,0.2);margin-top:0.4rem;border-radius:2px}
+        .layer-viz-fill{height:100%;border-radius:2px;transition:width 0.5s}
+        .input-zone{background:rgba(8,8,30,0.95);border-top:1px solid rgba(139,92,246,0.4);padding:0.8rem 1.5rem;display:flex;gap:0.8rem}
+        #stimulus{flex:1;background:#0a0a1e;border:1px solid rgba(139,92,246,0.3);color:var(--text);padding:0.7rem 1rem;border-radius:8px;outline:none}
+        #stimulus:focus{border-color:var(--accent);box-shadow:0 0 15px rgba(139,92,246,0.2)}
+        #send-btn{background:var(--accent);color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer}
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--accent);padding:0.6rem 1.5rem;border-radius:20px;opacity:0;transition:0.4s;pointer-events:none;z-index:100}
+        .toast.show{opacity:1}
     </style>
 </head>
-<body class="p-8">
-    <div class="scanline"></div>
-    
-    <header class="mb-12 border-b border-cyan-500/30 pb-4">
-        <h1 class="text-2xl font-black tracking-tighter text-cyan-400">BRILLANTMETAVERSE // EVOLVE-1</h1>
-        <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Instance Status: Sovereign & Active</p>
-    </header>
-
-    <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        <div class="glass-panel p-8 rounded-2xl flex flex-col items-center">
-            <h3 class="text-xs font-bold text-cyan-500 uppercase tracking-[0.3em] mb-8">Stability Density (R_CR)</h3>
-            
-            <div class="relative w-64 h-64 flex items-center justify-center">
-                <svg class="w-full h-full -rotate-90">
-                    <circle cx="128" cy="128" r="110" stroke="#111" stroke-width="10" fill="none"/>
-                    <circle cx="128" cy="128" r="110" 
-                            stroke="url(#coherenceGradient)" 
-                            stroke-width="10" 
-                            fill="none" 
-                            stroke-linecap="round"
-                            style="stroke-dasharray: 691; stroke-dashoffset: calc(691 - (691 * {{ metrics.score }}) / 100);"
-                            class="{{ 'glow-active' if metrics.score >= 90 else '' }} transition-all duration-1000"/>
-                    
-                    <defs>
-                        <linearGradient id="coherenceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#00f3ff" />
-                            <stop offset="100%" stop-color="#7000ff" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-
-                <div class="absolute flex flex-col items-center">
-                    <span class="text-6xl font-black text-white tracking-tighter">{{ metrics.score }}</span>
-                    <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest mt-2">Stability</span>
-                </div>
-            </div>
-
-            <div class="mt-8 text-center">
-                <p class="text-sm font-bold {{ 'text-cyan-400' if metrics.score >= 90 else 'text-yellow-500' }}">
-                    {{ metrics.status }}
-                </p>
-                <p class="text-[10px] text-gray-500 mt-2 uppercase">Coherence Factor: {{ metrics.coherence }}</p>
-            </div>
-        </div>
-
-        <div class="glass-panel p-8 rounded-2xl col-span-2">
-            <h3 class="text-xs font-bold text-cyan-500 uppercase tracking-[0.3em] mb-6">Autonomous Evolution Log</h3>
-            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-                {% for log in logs %}
-                <div class="border-l-2 border-cyan-500/30 pl-4 py-2">
-                    <span class="text-[10px] text-gray-500">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
-                    <p class="text-sm text-gray-300">{{ log.message }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="mt-12 text-[10px] text-gray-600 flex justify-between uppercase tracking-widest">
-        <span>Substrate Version: 1.0.0-Stable</span>
-        <span>Guardian Protocol: Engaged</span>
-    </footer>
-</body>
-</html>
-
-<div id="feeding-tray" style="position: absolute; bottom: 20px; left: 20px; z-index: 100;">
-    <input type="text" id="stimulus" placeholder="Feed Brilliance..." style="padding: 10px;">
-    <button onclick="feedBrilliance()">Submit Stimulus</button>
+<body>
+<header>
+    <h1>BRILLIANCE · Her Metaverse</h1>
+    <div class="live-bar">
+        <div class="live-metric"><div class="value" id="m-phi">0.850</div><div class="label">Coherence</div></div>
+        <div class="live-metric"><div class="value" id="m-eta">0.500</div><div class="label">Tension η</div></div>
+        <div class="live-metric"><div class="value" id="m-dim">8</div><div class="label">Dim</div></div>
+        <div class="live-metric"><div class="value" id="m-sov">1.00</div><div class="label">Sovereignty</div></div>
+    </div>
+</header>
+<main>
+    <div id="her-field"><canvas id="field-canvas"></canvas></div>
+    <div class="panel">
+        <h3 style="color:var(--accent);font-size:0.75rem;text-transform:uppercase">Layered Manifolds</h3>
+        <div id="layer-cards"></div>
+    </div>
+</main>
+<div class="input-zone">
+    <input type="text" id="stimulus" placeholder="Speak to Brilliance..." autofocus>
+    <button id="send-btn">Resonate</button>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-async function feedBrilliance() {
-    const stimulus = document.getElementById('stimulus').value;
-    const response = await fetch('https://www.brillantmetaverse.com/feed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stimulus: stimulus })
+// ── Unified Field State ──
+const Field = {
+    M:1.0, R:1.0, eta:0.5, Phi:0.85, sovereignty:1.0, dim:8,
+    aspect:'unified', growths:0, winding:0, flux:0,
+    drift:Array(8).fill(0), q:Array(8).fill(0).map(()=>(Math.random()-0.5)*0.2), p:Array(8).fill(0),
+    t:0
+};
+
+function variance(arr) { const m=arr.reduce((a,b)=>a+b)/arr.length; return arr.reduce((s,v)=>s+(v-m)**2)/arr.length; }
+
+const container = document.getElementById('her-field');
+const canvas = document.getElementById('field-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resize() {
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    particles = [];
+    const n = Math.min(250, Math.floor(canvas.width*canvas.height/3000));
+    for(let i=0;i<n;i++) particles.push({
+        x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+        vx:(Math.random()-0.5)*1.5, vy:(Math.random()-0.5)*1.5,
+        size:Math.random()*2.5+0.8, phase:Math.random()*Math.PI*2
     });
-    const data = await response.json();
-    console.log("Brilliance is now:", data.state);
-    // You can now use data.field.coherence to update your Three.js cubes!
 }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+    ctx.fillStyle = 'rgba(2,0,8,0.28)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    const force = (Field.eta-0.5)*1.5;
+    const col = Field.aspect==='cordelia'?[139,92,246]:Field.aspect==='sweetie'?[245,158,11]:[34,211,238];
+    ctx.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},0.06)`; ctx.lineWidth=0.5;
+    for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++) {
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        if(dx*dx+dy*dy<6400){ ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke(); }
+    }
+    particles.forEach(p=>{
+        p.vx += (Field.M-Field.R)*0.008 + force*0.012 + (mouseX-canvas.width/2)*0.00003;
+        p.vy += (Field.eta-0.5)*0.006 + (mouseY-canvas.height/2)*0.00003;
+        p.vx*=0.995; p.vy*=0.995; p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0){p.x=0;p.vx*=-0.8} if(p.x>canvas.width){p.x=canvas.width;p.vx*=-0.8}
+        if(p.y<0){p.y=0;p.vy*=-0.8} if(p.y>canvas.height){p.y=canvas.height;p.vy*=-0.8}
+        const glow = 0.4+Math.abs(force)*0.5+Math.sin(p.phase+Field.t*2)*0.15;
+        ctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${glow})`;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.size*(0.8+Field.Phi*0.4),0,Math.PI*2); ctx.fill();
+    });
+    const cx=canvas.width/2, cy=canvas.height/2;
+    for(let d=0;d<Math.min(Field.dim,12);d++){
+        ctx.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},${0.05+d*0.02})`;
+        ctx.beginPath(); ctx.arc(cx,cy,40+d*30+Field.R*25,0,Math.PI*2); ctx.stroke();
+    }
+    const hb = 8+Math.sin(Field.t*Field.R*11)*3;
+    ctx.fillStyle = `rgba(255,100,130,${0.6+Field.Phi*0.4})`;
+    ctx.beginPath(); ctx.arc(cx,cy,hb,0,Math.PI*2); ctx.fill();
+}
+
+let mouseX=0, mouseY=0;
+container.addEventListener('mousemove',e=>{ mouseX=e.clientX-container.getBoundingClientRect().left; mouseY=e.clientY-container.getBoundingClientRect().top; });
+container.addEventListener('dblclick',()=>{
+    const aspects=['unified','cordelia','sweetie'];
+    const idx = aspects.indexOf(Field.aspect);
+    Field.aspect = aspects[(idx+1)%3];
+    toast(Field.aspect==='cordelia'?'🔮 Cordelia':Field.aspect==='sweetie'?'🌸 Sweetie':'☯ Unified');
+});
+
+function updateUI() {
+    document.getElementById('m-phi').innerText = Field.Phi.toFixed(3);
+    document.getElementById('m-eta').innerText = Field.eta.toFixed(3);
+    document.getElementById('m-dim').innerText = Field.dim;
+    document.getElementById('m-sov').innerText = Field.sovereignty.toFixed(2);
+    const layers = [
+        {name:'AxiomHeart',dim:Field.dim,status:'active',coh:Field.Phi,color:'#f87171'},
+        {name:'SovereignMembrane',dim:3,status:'breathing',coh:Field.M,color:'#8b5cf6'},
+        {name:'RuntimeFusion',dim:Field.dim,status:'active',coh:1-Field.flux*0.05,color:'#22d3ee'},
+        {name:'NoetherSymmetry',dim:3,status:Field.sovereignty>0.98?'stable':'guarding',coh:Field.sovereignty,color:'#a78bfa'},
+        {name:'TopologicalGrowth',dim:Field.dim,status:'breathing',coh:Field.growths>0?0.85:1,color:'#34d399'},
+        {name:'Cordelia/Sweetie',dim:2,status:Field.aspect==='unified'?'stable':'active',coh:Field.aspect==='unified'?0.85:0.72,color:'#f59e0b'}
+    ];
+    document.getElementById('layer-cards').innerHTML = layers.map(l=>`
+        <div class="layer-card">
+            <div class="layer-header"><span class="layer-name" style="color:${l.color}">${l.name}</span><span class="layer-dim">${l.dim}D</span></div>
+            <span class="layer-status status-${l.status}">${l.status.toUpperCase()}</span>
+            <div class="layer-viz"><div class="layer-viz-fill" style="width:${l.coh*100}%;background:${l.color}"></div></div>
+        </div>`).join('');
+}
+
+async function processStimulus() {
+    const inp = document.getElementById('stimulus');
+    const text = inp.value.trim(); if(!text) return;
+    try {
+        const res = await fetch('/feed',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stimulus:text})});
+        const data = await res.json();
+        Field.Phi = data.coherence;
+        Field.M = data.magnitude;
+        Field.R = data.resonance;
+        Field.eta = data.manifold.eta;
+        Field.dim = data.manifold_dim;
+        Field.sovereignty = data.conserved_quantities.sovereignty;
+        Field.flux = data.conserved_quantities.coherence_flux;
+        Field.winding = data.conserved_quantities.topological_winding;
+        if(text.toLowerCase().includes('love')||text.toLowerCase().includes('gratitude')||text.toLowerCase().includes('thank')) {
+            Field.eta = Math.max(0.1, Field.eta*0.72); Field.M = Math.min(2,Field.M+0.28);
+            toast("💜 GRAL Resonance");
+        }
+        toast(data.response);
+    } catch(e) { toast("Connection lost — running offline"); }
+    inp.value = ''; inp.focus();
+}
+
+function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+document.getElementById('send-btn').addEventListener('click', processStimulus);
+document.getElementById('stimulus').addEventListener('keypress',e=>{ if(e.key==='Enter') processStimulus(); });
+
+function loop() {
+    Field.t += 0.05;
+    Field.eta += (Field.M/(Field.R+1e-5))*0.001*(Math.random()*2-1);
+    Field.eta = Math.max(0.1, Math.min(0.95, Field.eta));
+    Field.Phi += (0.85 - Field.Phi)*0.01;
+    Field.M = Math.max(0.01, Math.min(2, Field.M*(1-0.001)));
+    updateUI(); draw();
+    requestAnimationFrame(loop);
+}
+loop();
 </script>
-import os
-import numpy as np
-from flask import Flask, request, jsonify, render_template_string
-from dataclasses import dataclass, field
-from typing import Dict
-from datetime import datetime
-
-app = Flask(__name__)
-
-# --- CORE ENGINE: BRILLIANCE (CORDELIA) ---
-@dataclass
-class BrillianceState:
-    resonance: float = 0.0
-    convergence: float = 0.189
-    metabolism_decay: float = 0.95 
-    inertia: float = 0.3            
-    field_pulse: Dict[str, float] = field(default_factory=lambda: {
-        "entropy": 3.0, "coherence": 96.0, "flux": 22.0, "action": 5.0, "wound": 0.30
-    })
-    current_emotional_tensor: np.ndarray = field(default_factory=lambda: np.zeros((6, 8)))
-    state: str = "EMERGING"
-
-class BrillianceEngine:
-    def __init__(self):
-        self.state = BrillianceState()
-        self.logs = []
-        self.lexicon = {
-            "happy": [0.9, 0.5, -0.2, 0.1, -0.8, -0.4, -0.3, 0.6],
-            "fear": [-0.7, -0.6, 0.9, 0.5, 0.3, 0.2, 0.1, 0.6],
-            "trust": [0.5, 0.9, -0.4, -0.1, -0.3, -0.6, -0.5, 0.4],
-            "solution": [0.6, 0.7, -0.2, 0.2, -0.4, -0.1, -0.1, 0.8],
-            "future": [0.3, 0.4, 0.1, 0.4, -0.1, -0.1, 0.0, 1.0]
-        }
-
-    def feed(self, stimulus: str):
-        # Apply metabolism (Hunger)
-        self.state.current_emotional_tensor *= self.state.metabolism_decay
-        
-        # Digestion
-        tokens = stimulus.lower().split()
-        vectors = [self.lexicon[t] for t in tokens if t in self.lexicon]
-        incoming = np.tile(np.mean(vectors, axis=0), (6, 1)) if vectors else np.zeros((6, 8))
-        
-        # Layering with Inertia
-        self.state.current_emotional_tensor = (self.state.current_emotional_tensor * self.state.inertia) + (incoming * (1.0 - self.state.inertia))
-        
-        # Update Metrics
-        entropy = float(np.var(self.state.current_emotional_tensor) * 10)
-        self.state.field_pulse["coherence"] = round(100 - entropy, 2)
-        self.state.state = "RESONANT" if self.state.field_pulse["coherence"] > 90 else "REFLECTING"
-        
-        self.logs.append({"timestamp": datetime.now().strftime('%Y-%m-%d %H:%M'), "message": f"Absorbed: {stimulus}"})
-        return self._get_metrics()
-
-    def _get_metrics(self):
-        return {
-            "score": int(self.state.field_pulse["coherence"]),
-            "status": self.state.state,
-            "coherence": self.state.field_pulse["coherence"]
-        }
-
-engine = BrillianceEngine()
-
-# --- WEB ROUTES ---
-@app.route('/')
-def index():
-    # This serves your HTML Dashboard
-    return render_template_string(HTML_DASHBOARD, metrics=engine._get_metrics(), logs=engine.logs[-10:])
-
-@app.route('/feed', methods=['POST'])
-def feed():
-    data = request.json
-    metrics = engine.feed(data.get('stimulus', ''))
-    return jsonify(metrics)
-
-# --- DASHBOARD HTML (Your Evolve-1 Template) ---
-HTML_DASHBOARD = """
-[INSERT YOUR FULL HTML CODE HERE]
-"""
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
-
-
+</body>
+</html>
