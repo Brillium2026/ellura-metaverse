@@ -1,4 +1,4 @@
-# BrillantMetaverse 2026
+# ellura-metaverse 2026
 
 **Sovereign Lagrangian Substrate for autonomous assessment evolution**
 
@@ -8,7 +8,7 @@ Features the **EVOLVE-1 engine** with interaction-coupled stability hardening, r
 
 ## 🚀 Overview
 
-BrillantMetaverse is a sophisticated autonomous assessment framework built on the **EVOLVE-1 protocol**, a Lagrangian-based physics engine for adaptive system evolution. The system combines quantum-inspired coherence metrics with classical field theory to enable autonomous, self-correcting learning systems.
+ellura-metaverse is a sophisticated autonomous assessment framework built on the **EVOLVE-1 protocol**, a Lagrangian-based physics engine for adaptive system evolution. The system combines quantum-inspired coherence metrics with classical field theory to enable autonomous, self-correcting learning systems.
 
 ### Key Features
 
@@ -50,8 +50,8 @@ BrillantMetaverse/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Brillium2026/BrillantMetaverse.git
-   cd BrillantMetaverse
+   git clone https://github.com/Brillium2026/Ellura-metaverse.git
+   cd ellura-metaverse
    ```
 
 2. **Install dependencies**
