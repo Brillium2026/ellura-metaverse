@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: brillantmetaverse
+    name: ellura-metaverse.com 
     env: python
     plan: free
     pythonVersion: "3.11"
