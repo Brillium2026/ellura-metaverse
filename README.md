@@ -25,7 +25,7 @@ ellura-metaverse is a sophisticated autonomous assessment framework built on the
 ## 📋 Project Structure
 
 ```
-BrillantMetaverse/
+Ellura-Metaverse/
 ├── sovereign_substrate.py      # Core EVOLVE-1 engine implementation
 ├── brilliant_interactive_demo.py # Interactive CLI interface
 ├── main.py                     # FastAPI application entry point
@@ -405,7 +405,7 @@ Contributions are welcome! Please:
 
 ## 📄 License
 
-This project is part of the BrillantMetaverse ecosystem.
+This project is part of the Ellura-Metaverse ecosystem.
 
 ---
 
