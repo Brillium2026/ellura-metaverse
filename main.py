@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 LAGRANGIAN-ELLURA: CORE SUBSTRATE
@@ -10,17 +9,29 @@ Principle: Nothing is stacked, everything is layered.
 """
 
 import time
-from typing import Dict, Any, List
+from typing import Dict, Any
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 
+# --- Data Validation Substrate ---
+class ManifoldSignal(BaseModel):
+    """Structured validation layer for incoming real-time signals"""
+    v: float = 1.0  # Visual data feature extraction
+    h: float = 1.0  # Haptic data feature extraction
+    a: float = 1.0  # Auditory data feature extraction
+    c: float = 1.0  # Contextual data feature extraction
+    potential: float = 0.0  # Potential energy context (V)
+
+
+# --- Core Mathematical Substrate ---
 class LayeredManifold:
     """Represents the real-time intersecting layers of physics and meaning"""
 
     def __init__(self):
-        # Universal Constants & Weights
         self.c = 299792458  # Speed of light
         
-        # Real-time state metrics (±8.5% Neutral Drift Target Substrate)
+        # Real-time state weights (Target Substrate)
         self.state_weights = {
             "visual": 0.3,
             "haptic": 0.3,
@@ -51,18 +62,13 @@ class LayeredManifold:
         """
         return kinetic_energy - potential_energy
 
-    def process_manifold_tick(self, inputs: Dict[str, float]) -> Dict[str, Any]:
+    def process_manifold_tick(self, signal: ManifoldSignal) -> Dict[str, Any]:
         """Runs a real-time parallel iteration of the system layers"""
-        t_feeling = self.digital_textural_feeling(
-            inputs.get("v", 1.0), 
-            inputs.get("h", 1.0), 
-            inputs.get("a", 1.0), 
-            inputs.get("c", 1.0)
-        )
+        t_feeling = self.digital_textural_feeling(signal.v, signal.h, signal.a, signal.c)
         
         # Information density directly drives the field energy via CAG equation
         active_energy = self.cag_equation(t_feeling)
-        lagrangian = self.lagrangian_field(active_energy, inputs.get("potential", 0.0))
+        lagrangian = self.lagrangian_field(active_energy, signal.potential)
         
         return {
             "timestamp": time.time(),
@@ -72,19 +78,26 @@ class LayeredManifold:
         }
 
 
-def main():
-    print("Initializing Lagrangian-Ellura Substrate...")
-    manifold = LayeredManifold()
-    
-    # Simulation baseline sample inputs
-    sample_signals = {"v": 0.85, "h": 0.90, "a": 0.75, "c": 1.0, "potential": 0.05}
-    
-    state_output = manifold.process_manifold_tick(sample_signals)
-    
-    print("\n--- Active Layer Metrics ---")
-    for key, val in state_output.items():
-        print(f"{key}: {val}")
+# --- API Wrapper Layer ---
+app = FastAPI(
+    title="Lagrangian-Ellura",
+    description="Dynamic Real-Time Mathematical Substrate",
+    version="1.0.0"
+)
+manifold = LayeredManifold()
 
 
-if __name__ == "__main__":
-    main()
+@app.get("/")
+def read_root():
+    """Health check endpoint confirming substrate activation"""
+    return {
+        "status": "online",
+        "identity": "Lagrangian-Ellura",
+        "substrate": "Active Layered Manifold"
+    }
+
+
+@app.post("/manifold/tick")
+def process_tick(signal: ManifoldSignal):
+    """Accepts runtime physical data payloads to compute current field states"""
+    return manifold.process_manifold_tick(signal)
