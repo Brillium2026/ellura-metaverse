@@ -6,7 +6,9 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     try:
-        with open('static/index.html', 'r') as f:
+import os
+file_path = os.path.join(os.path.dirname(__file__), 'static', 'index.html')
+with open(file_path, 'r') as f:
             return f.read(), 200, {'Content-Type': 'text/html'}
     except:
         return "<html><body style='background:black;color:white;'><h1>ELLURA</h1><p>Status: Online</p></body></html>", 200, {'Content-Type': 'text/html'}
