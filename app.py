@@ -139,7 +139,7 @@ def health():
 @app.route('/')
 def index():
     # Read the Metaverse HTML file (we'll put it in the same directory)
-    with open("index.html", "r") as f:
+    with open("static/index.html", "r") as f:
         html = f.read()
     return render_template_string(html)
 
