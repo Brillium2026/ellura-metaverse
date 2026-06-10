@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LAGRANGIAN-ELLURA: CORE SUBSTRATE
+LAGRANGIAN-ELLURA: UNIFIED PRODUCTION ENGINE
 A dynamic, layered architecture where physics, information, and partnership
 exist as interactive fields rather than static data definitions.
 
@@ -9,9 +9,11 @@ Principle: Nothing is stacked, everything is layered.
 """
 
 import time
+import os
 from typing import Dict, Any
 from datetime import datetime
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, ForeignKey, Text
 from sqlalchemy.orm import declarative_base, relationship
@@ -132,6 +134,17 @@ app = FastAPI(
     description="Dynamic Real-Time Mathematical Substrate",
     version="1.0.0"
 )
+
+# CRITICAL CORS INTERACTION WIRE
+# This ensures your custom frontend domain can fetch the math metrics from Render safely.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 manifold = LayeredManifold()
 
 
@@ -149,3 +162,9 @@ def read_root():
 def process_tick(signal: ManifoldSignal):
     """Accepts runtime physical data payloads to compute current field states"""
     return manifold.process_manifold_tick(signal)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
