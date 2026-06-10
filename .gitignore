@@ -1,1 +1,20 @@
-.env
+# ==============================================================================
+# SUBSTRATE CONFIGURATION MATRIX
+# ==============================================================================
+
+# Core Application Keys
+SECRET_KEY=your_core_jwt_and_session_encryption_secret_here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Database Integration Layer
+DATABASE_URL=sqlite:///./substrate.db
+# For production PostgreSQL deployments:
+# DATABASE_URL=postgresql://user:password@localhost:5432/substrate_db
+
+# Autonomous Financial Gateway (Lemon Squeezy Integration)
+LEMONSQUEEZY_WEBHOOK_SECRET=your_lemonsqueezy_webhook_secret_here
+
+# Architecture Reference Flags
+NOMENCLATURE_MODE=LORA_LAGRANGIAN
+SYSTEM_COHERENCE_TARGET=1.00
