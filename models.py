@@ -22,11 +22,11 @@ class Assessment(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     
-    # --- EVOLVE-1 METRICS ---
+    # --- ELLURA EVOLVE METRICS ---
     performance_score = Column(Float, default=0.0)
     last_evolved_at = Column(DateTime, default=datetime.utcnow)
     
-    # This is the "Coherence Reset" sensor
+    # Coherence Reset sensor
     last_interaction_at = Column(DateTime, default=datetime.utcnow)
     
     owner = relationship("User", back_populates="assessments")
