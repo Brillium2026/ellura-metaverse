@@ -10,7 +10,6 @@ from datetime import datetime
 
 router = APIRouter()
 
-# This secret comes from your Lemon Squeezy Webhook settings
 LEMONSQUEEZY_WEBHOOK_SECRET = os.getenv("LEMONSQUEEZY_WEBHOOK_SECRET")
 
 @router.post("/lemonsqueezy")
@@ -19,7 +18,6 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     Autonomous Financial Gateway.
     Handles the handshake and provisions the Substrate.
     """
-    # 1. Verify the Signature (Security Check)
     signature = request.headers.get("X-Signature")
     payload = await request.body()
     
@@ -35,18 +33,14 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     if not hmac.compare_digest(signature, digest):
         raise HTTPException(status_code=400, detail="Invalid signature - Handshake failed")
 
-    # 2. Parse the Event
     data = await request.json()
     event_name = data.get("meta", {}).get("event_name")
     attributes = data.get("data", {}).get("attributes", {})
     email = attributes.get("user_email")
 
-    # 3. Handle Subscription Events
-    if event_name == "subscription_created" or event_name == "order_created":
-        # Check if user exists, if not, create them
+    if event_name in ["subscription_created", "order_created"]:
         user = db.query(User).filter(User.email == email).first()
         if not user:
-            # Create user with a temporary password (they will reset via email)
             temp_password = get_password_hash(os.urandom(12).hex())
             user = User(
                 email=email, 
@@ -54,9 +48,8 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
                 is_active=True
             )
             db.add(user)
-            db.flush() # Get user ID
+            db.flush()
             
-            # Log the activation in the substrate
             log = EvolveLog(
                 message=f"Substrate Provisioned: Marketplace activation via {event_name}",
                 user_id=user.id
@@ -67,7 +60,6 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
         return {"status": "success", "message": "Substrate activated"}
 
     if event_name == "subscription_cancelled":
-        # Handle access revocation if necessary
         user = db.query(User).filter(User.email == email).first()
         if user:
             user.is_active = False
