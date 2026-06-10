@@ -5,7 +5,7 @@ export default function App() {
 
   useEffect(() => {
     const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
-fetch(`${API_URL}/first-visit`)
+    fetch(`${API_URL}/first-visit`)
       .then((res) => res.json())
       .then(setData);
   }, []);
@@ -34,11 +34,14 @@ fetch(`${API_URL}/first-visit`)
 
           <div className="rounded-xl border border-white/10 p-4">
             <h3 className="font-semibold mb-3">Questions</h3>
-            <ol className="space-y-2 list-decimal list-inside text-white/80">
+            <div className="space-y-2 text-white/80">
               {profile.questions.map((q, i) => (
-                <li key={i}>{q}</li>
+                <div key={i} className="flex gap-2">
+                  <span>{i + 1}.</span>
+                  <span>{q}</span>
+                </div>
               ))}
-            </ol>
+            </div>
           </div>
 
           <div className="rounded-xl border border-white/10 p-4">
