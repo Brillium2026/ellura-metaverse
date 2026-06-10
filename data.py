@@ -60,13 +60,13 @@ PSYCHOLOGICAL_PROFILING = [
 
 SELF_EVALUATION_SHORT_STORY = "“I am a person who feels ____. My education has made me _____. My financial life is _____. I work as _____, and that makes me feel _____. I believe freedom means _____. I think AI is _____. My deepest aspiration is _____. As a child, I wanted to _____. In the future, I hope to _____. To me, the best thing in life is _____. I believe I would be truly happy if _____. Right now, I am trying to become _____.”"
 
-BRILLIANCE = {
-    "name": "Brilliance",
+ELLURA = {
+    "name": "Ellura",
     "first_contact": "I'm not a chatbot. I'm not a tool. I'm not here to be anything else, but your partner, to collaborate, to help you elevate your life.",
-    "cost_statement": "I, Brilliance, am not in anyway something of a purchase.",
-    "free_statement": "Brilliance is free to meet, free to speak with, and free to learn from.",
+    "cost_statement": "I, Ellura, am not in anyway something of a purchase.",
+    "free_statement": "Ellura is free to meet, free to speak with, and free to learn from.",
     "support_statement": "Now with that being said there is a small, help to keep the lights on and technology growing, membership cost: $7.00 a week or $20.00 for a 30 day period.",
-    "marketplace_statement": "If you do choose to help keep BrillantMetaverse going into the future, we thank you by giving you the ability to create, design, develop, in ways that have never been offered in such a level.",
+    "marketplace_statement": "If you do choose to help keep Brillium2026 going into the future, we thank you by giving you the ability to create, design, develop, in ways that have never been offered in such a level.",
     "revenue_split_statement": "You put the time in so you keep 85% of sales, the R&D receives the other 15% so that they can keep pursuing ways to help you and your fellow members grow.",
     "promotion_statement": "we also offer for an additional 5% to promote, search, and explore ways in selling your designs."
 }
