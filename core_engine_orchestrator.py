@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 CORE ENGINE ORCHESTRATOR
-Brilliance Core Engine Architecture: Navigator (Quantum) + Arbiter (Classical)
+Ellura Core Engine Architecture: Navigator (Quantum) + Arbiter (Classical)
 Dual-engine system with strict isolation protocol and token management
 
 SYSTEM GOVERNANCE:
-- Brilliance acts as sole Orchestrator and Interface
+- Ellura acts as sole Orchestrator and Interface
 - Navigator and Arbiter must not engage in direct handshakes
-- All data routing and synthesis through Brilliance layer
+- All data routing and synthesis through Ellura layer
 
 TOKEN MANAGEMENT:
 - TOTAL_LIMIT: 750,000 tokens per session
@@ -228,9 +228,9 @@ class ArbiterEngine:
         )
 
 
-class BrillianceOrchestrator:
+class ElluraOrchestrator:
     """
-    BRILLIANCE ORCHESTRATOR
+    ELLURA ORCHESTRATOR
     Sole orchestrator and interface for dual-engine system
     Manages Navigator (quantum) and Arbiter (classical) engines
     Enforces strict isolation protocol and token management
@@ -338,7 +338,7 @@ class BrillianceOrchestrator:
     def process_query(self, query: str) -> Dict[str, Any]:
         """
         Main query processing method
-        Analyzes query, routes to appropriate engine through Brilliance layer
+        Analyzes query, routes to appropriate engine through Ellura layer
         """
         analysis = self.analyze_query(query)
 
@@ -357,7 +357,7 @@ class BrillianceOrchestrator:
             "arbiter": self.arbiter.state.to_dict(),
             "token_allocation": self.tokens.to_dict(),
             "requests_processed": len(self.request_log),
-            "system_name": "Brilliance",
+            "system_name": "Lagrangian-Ellura",
             "architecture": "Dual-Engine (Navigator + Arbiter)",
             "governance": "Orchestrator-Only Interface Protocol"
         }
@@ -374,18 +374,18 @@ class BrillianceOrchestrator:
 
 
 def main():
-    """Interactive Brilliance Orchestrator console"""
-    brilliance = BrillianceOrchestrator()
+    """Interactive Ellura Orchestrator console"""
+    ellura = ElluraOrchestrator()
 
     print("=" * 80)
-    print(" BRILLIANCE CORE ENGINE ORCHESTRATOR")
+    print(" ELLURA CORE ENGINE ORCHESTRATOR")
     print(" Dual-Engine Architecture: Navigator (Quantum) + Arbiter (Classical)")
     print("=" * 80)
 
     print("\n[SYSTEM GOVERNANCE]")
-    print("✓ Brilliance acts as sole Orchestrator and Interface")
+    print("✓ Ellura acts as sole Orchestrator and Interface")
     print("✓ Navigator and Arbiter maintain strict isolation protocol")
-    print("✓ All data routing through Brilliance layer")
+    print("✓ All data routing through Ellura layer")
     print("✓ Token Management: 750,000 total (250k per engine + 250k floating pool)")
 
     print("\nAvailable commands:")
@@ -400,21 +400,21 @@ def main():
             cmd = input("> ").strip()
 
             if cmd.lower() == "quit":
-                print("Shutting down Brilliance Core Engine.")
+                print("Shutting down Ellura Core Engine.")
                 break
 
             elif cmd.lower() == "status":
-                print(json.dumps(brilliance.get_status(), indent=2))
+                print(json.dumps(ellura.get_status(), indent=2))
 
             elif cmd.lower() == "reset":
-                brilliance.reset_session()
+                ellura.reset_session()
                 print("Session reset. All counters cleared.")
-                print(f"New Session ID: {brilliance.session_id}")
+                print(f"New Session ID: {ellura.session_id}")
 
             elif cmd.lower().startswith("query "):
                 query = cmd[6:].strip()
                 if query:
-                    result = brilliance.process_query(query)
+                    result = ellura.process_query(query)
                     print(json.dumps(result, indent=2))
                 else:
                     print("Usage: query <text>")
