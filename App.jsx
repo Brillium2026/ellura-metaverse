@@ -6,7 +6,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fallback to your live Render instance URL if environment variables aren't injected
+  // Fallback points directly to your verified secure Render instance
   const API_URL = process.env.REACT_APP_API_URL || "https://ellura-metaverse-1.onrender.com";
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function App() {
       <div className="min-h-screen bg-black text-red-500 flex items-center justify-center">
         <div className="border border-red-500/30 bg-red-500/5 rounded-xl p-6 max-w-md text-center">
           <h2 className="text-xl font-bold mb-2">Connection Reset</h2>
-          <p className="text-sm opacity-80">{error}. Check if main.py is fully deployed on Render.</p>
+          <p className="text-sm opacity-80">{error}. Check if your active app script is fully deployed on Render.</p>
         </div>
       </div>
     );
