@@ -7,7 +7,7 @@ export default function App() {
   const [error, setError] = useState(null);
 
   // Fallback to your live Render instance URL if environment variables aren't injected
-  const API_URL = process.env.REACT_APP_API_URL || "http://ellura-metaverse-1-5e6n.onrender.com";
+  const API_URL = process.env.REACT_APP_API_URL || "https://ellura-metaverse-1.onrender.com";
 
   useEffect(() => {
     // Step 1: Connect to the core health check root to verify substrate activation
